@@ -24,5 +24,5 @@ def get_report(report_id: int) -> Report:
 def list_reports(user_id: int | None = None) -> list[Report]:
     reports = repository.list_all()
     if user_id is not None:
-        reports = [r for r in reports if r.user_id == user_ids]
+        reports = [r for r in reports if r.user_id == user_id]
     return reports
