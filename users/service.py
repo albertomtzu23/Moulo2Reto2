@@ -9,11 +9,14 @@ from users import repository
 from users.schemas import User, UserCreate
 
 
-def get_user(user_id: int) -> User:
-    user = repository.get(user_id)
+def _require_user(user: User | None, identifier: int | str) -> User:
     if user is None:
-        raise errors.not_found("usuario", user_id)
+        raise errors.not_found("usuario", identifier)
     return user
+
+
+def get_user(user_id: int) -> User:
+    return _require_user(repository.get(user_id), user_id)
 
 
 def list_users() -> list[User]:
@@ -22,10 +25,7 @@ def list_users() -> list[User]:
 
 def search_user(email: str) -> User:
     """Busca por email sin distinguir mayúsculas y minúsculas."""
-    user = repository.find_by_email(email)
-    if user is None:
-        raise errors.not_found("usuario", email)
-    return user
+    return _require_user(repository.find_by_email(email), email)
 
 
 def create_user(data: UserCreate) -> User:
