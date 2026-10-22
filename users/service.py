@@ -20,6 +20,14 @@ def list_users() -> list[User]:
     return repository.list_all()
 
 
+def search_user(email: str) -> User:
+    """Busca por email sin distinguir mayúsculas y minúsculas."""
+    user = repository.find_by_email(email)
+    if user is None:
+        raise errors.not_found("usuario", email)
+    return user
+
+
 def create_user(data: UserCreate) -> User:
     if repository.find_by_email(str(data.email)) is not None:
         raise errors.already_exists("usuario", data.email)

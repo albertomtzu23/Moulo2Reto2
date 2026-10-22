@@ -29,6 +29,33 @@ def test_get_user_inexistente_devuelve_404(client: TestClient) -> None:
     assert "no encontrado" in response.json()["detail"]
 
 
+def test_search_user_existente_devuelve_200(client: TestClient) -> None:
+    response = client.get("/users/search", params={"email": "ada@example.com"})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "ada@example.com"
+
+
+def test_search_user_email_invalido_devuelve_422(client: TestClient) -> None:
+    response = client.get("/users/search", params={"email": "no-es-un-email"})
+
+    assert response.status_code == 422
+
+
+def test_search_user_inexistente_devuelve_404(client: TestClient) -> None:
+    response = client.get("/users/search", params={"email": "missing@example.com"})
+
+    assert response.status_code == 404
+    assert "no encontrado" in response.json()["detail"]
+
+
+def test_search_user_email_no_distingue_mayusculas(client: TestClient) -> None:
+    response = client.get("/users/search", params={"email": "ADA@EXAMPLE.COM"})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "ada@example.com"
+
+
 def test_create_user_devuelve_201_y_el_usuario(client: TestClient) -> None:
     payload = {"name": "Margaret Hamilton", "email": "margaret@example.com"}
 

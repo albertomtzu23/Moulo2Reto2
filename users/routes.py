@@ -7,6 +7,7 @@ Patrón de referencia para nuevas rutas:
   - los errores los levanta `service.py` con `core.errors`
 """
 from fastapi import APIRouter, status
+from pydantic import EmailStr
 
 from users import service
 from users.schemas import User, UserCreate
@@ -17,6 +18,12 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("", response_model=list[User])
 def list_users() -> list[User]:
     return service.list_users()
+
+
+@router.get("/search", response_model=User)
+def search_user(email: EmailStr) -> User:
+    """Busca un usuario por email validado."""
+    return service.search_user(str(email))
 
 
 @router.get("/{user_id}", response_model=User)

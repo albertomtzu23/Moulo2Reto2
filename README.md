@@ -31,6 +31,7 @@ Endpoints actuales:
 |--------|-------------------|---------------------------------|
 | GET    | `/health`         | Estado del servicio             |
 | GET    | `/users`          | Lista de usuarios               |
+| GET    | `/users/search?email=<email>` | Busca un usuario por email (422 si el formato es inválido, 404 si no existe) |
 | GET    | `/users/{id}`     | Un usuario por id (404 si no existe) |
 | POST   | `/users`          | Crea un usuario (409 si el email ya existe) |
 
