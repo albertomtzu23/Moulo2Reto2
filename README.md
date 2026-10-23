@@ -58,4 +58,9 @@ ruff check .                                 # linter
 La implementación sigue el flujo ruta → servicio → repositorio. Las pruebas de
 aceptación y casos límite están en `tests/test_users.py`.
 
+## Evidencias del Reto 2
+
+- [Log del proceso, changelog y reflexión](./Reto2-Evidencias/clase5-log-proceso.md)
+- [Prompts y reflexión del uso de IA](./Reto2-Evidencias/clase5-prompts.md)
+
 Lee `CLAUDE.md` antes de empezar: ahí están las convenciones que tu código debe respetar.
