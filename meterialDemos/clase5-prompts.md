@@ -166,3 +166,18 @@ Para cada prompt realmente utilizado, anota en `clase5-log-proceso.md` la etapa,
 el prompt o una referencia a esta sección, los archivos tocados y la salida
 observada. Adjunta capturas o logs conservando suficiente contexto para
 verificar cada afirmación.
+
+## Reflexión
+
+La creación de un endpoint debe apoyarse en un patrón de desarrollo claro. En
+este reto usamos **test-first**: primero definimos y ejecutamos las pruebas, y
+después implementamos la funcionalidad hasta satisfacer los criterios de
+aceptación.
+
+Para que la IA pueda generar una solución correcta y coherente con el proyecto,
+es importante proporcionarle el contexto necesario: interfaces y tipos
+existentes, ejemplos de uso, archivos relevantes y convenciones. La suite debe
+incluir pruebas unitarias para los casos de éxito y también para entradas
+inválidas, recursos inexistentes y otros errores esperados. Finalmente, la
+funcionalidad debe quedar documentada en el README y en los docstrings, y el
+manejo de errores debe seguir el patrón establecido por el proyecto.
