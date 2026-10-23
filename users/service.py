@@ -10,6 +10,7 @@ from users.schemas import User, UserCreate
 
 
 def _require_user(user: User | None, identifier: int | str) -> User:
+    """Devuelve el usuario o genera el error 404 estándar del recurso."""
     if user is None:
         raise errors.not_found("usuario", identifier)
     return user
@@ -24,7 +25,7 @@ def list_users() -> list[User]:
 
 
 def search_user(email: str) -> User:
-    """Busca por email sin distinguir mayúsculas y minúsculas."""
+    """Busca por email y genera un 404 estándar cuando no hay coincidencia."""
     return _require_user(repository.find_by_email(email), email)
 
 

@@ -2,9 +2,9 @@
 
 API REST de usuarios usada como base en el **Módulo 2 · Clase 1 — Generación de código con IA**.
 
-Es un proyecto pequeño pero completo: tiene convenciones, capas separadas, catálogo
-de errores y una suite de tests que pasa. Le falta **una** feature — la que vas a
-construir en el laboratorio.
+Es un proyecto pequeño y ejecutable con convenciones, capas separadas, catálogo
+de errores y una suite de tests. Incluye búsqueda de usuarios por email en
+`GET /users/search`.
 
 ## Requisitos
 
@@ -35,6 +35,18 @@ Endpoints actuales:
 | GET    | `/users/{id}`     | Un usuario por id (404 si no existe) |
 | POST   | `/users`          | Crea un usuario (409 si el email ya existe) |
 
+### Buscar usuario por email
+
+Ejemplo de solicitud:
+
+```bash
+curl "http://127.0.0.1:8000/users/search?email=ada%40example.com"
+```
+
+- **200 OK:** devuelve el objeto `User` si el email existe.
+- **422 Unprocessable Entity:** el parámetro `email` falta o no tiene un formato válido.
+- **404 Not Found:** el email tiene formato válido, pero no corresponde a ningún usuario.
+
 ## Tests y calidad
 
 ```bash
@@ -43,13 +55,7 @@ pytest --cov=. --cov-report=term-missing     # con cobertura
 ruff check .                                 # linter
 ```
 
-## Tarea del laboratorio
-
-Añadir `GET /users/search?email=<email>`:
-
-- **200** con el usuario si existe
-- **422** si el formato del email es inválido
-- **404** si no hay ningún usuario con ese email
-- con su test en `tests/test_users.py`, siguiendo el estilo del archivo
+La implementación sigue el flujo ruta → servicio → repositorio. Las pruebas de
+aceptación y casos límite están en `tests/test_users.py`.
 
 Lee `CLAUDE.md` antes de empezar: ahí están las convenciones que tu código debe respetar.

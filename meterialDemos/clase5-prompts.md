@@ -2,6 +2,73 @@
 
 Estos prompts son una guía reutilizable para el laboratorio. Los que todavía no se hayan enviado a una IA son **propuestos**, no evidencia de ejecución. Registra los prompts realmente usados y sus resultados en `clase5-log-proceso.md`.
 
+## Prompts ejecutados y evidencia
+
+Los siguientes prompts sí se utilizaron en la conversación del reto. Las pruebas
+y la implementación ocurrieron antes del prompt de contexto final; no se debe
+presentar ese prompt posterior como causa de cambios anteriores.
+
+### Pruebas test-first
+
+```text
+Lee @CLAUDE.md, @README.md, @users/routes.py, @users/service.py,
+@users/repository.py, @users/schemas.py, @core/errors.py y @tests/test_users.py.
+
+Vamos a implementar GET /users/search?email=<email> usando test-first.
+Por ahora, modifica únicamente @tests/test_users.py; no cambies código de
+producción ni archivos de reports/.
+
+Criterios: 200 para un email existente, 422 para un email inválido y 404
+para un email válido sin coincidencia. Incluye también un caso que compruebe
+si la búsqueda conserva la comparación sin distinguir mayúsculas/minúsculas.
+
+Después ejecuta las pruebas de users y reporta el resultado exacto, sin
+afirmar que pasan si no se ejecutaron.
+```
+
+**Resultado registrado:** se añadieron los casos de búsqueda; la primera
+ejecución tuvo 7 tests pasados y 3 fallidos porque la ruta aún no existía.
+Ver iteraciones 5 y 6 en `clase5-log-proceso.md`.
+
+### Contexto e interfaces
+
+```text
+Lee @CLAUDE.md y @README.md. Para implementar la búsqueda por email,
+consulta @users/routes.py, @users/service.py, @users/repository.py,
+@users/schemas.py, @core/errors.py y @tests/test_users.py.
+
+La interfaz del repositorio es find_by_email(email: str) -> User | None.
+El endpoint GET /users/search?email=<email> debe responder 200 si encuentra
+el usuario, 422 si el email es inválido y 404 si no existe. La ruta específica
+/search debe ir antes de /{user_id}. Respeta el flujo ruta → servicio →
+repositorio y las convenciones de CLAUDE.md.
+```
+
+**Resultado registrado:** se guardó como evidencia de contexto después de
+implementar el endpoint. Ver iteración 7 de `clase5-log-proceso.md`.
+
+### Implementación incremental
+
+```text
+Genera el nuevo endpoint REST, añade la ruta específica antes de
+`/users/{user_id}` y conecta el servicio con `find_by_email`.
+```
+
+**Resultado registrado:** se implementó `GET /users/search`, el servicio
+delegó la consulta en el repositorio y las pruebas enfocadas pasaron. Ver
+iteración 6 de `clase5-log-proceso.md`.
+
+### Depuración y refactorización
+
+```text
+Debuggea y refactoriza el código generado.
+```
+
+**Resultado registrado:** no se reprodujo un fallo funcional en `users`; se
+extrajo `_require_user` para compartir el manejo del error 404 y se volvieron
+a ejecutar las pruebas de usuarios y Ruff. Ver iteración 13 de
+`clase5-log-proceso.md`.
+
 ## Contexto del proyecto
 
 Antes de cada etapa, proporciona a la IA las convenciones y archivos pertinentes. En Claude Code, por ejemplo:

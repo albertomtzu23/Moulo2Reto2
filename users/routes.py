@@ -22,7 +22,7 @@ def list_users() -> list[User]:
 
 @router.get("/search", response_model=User)
 def search_user(email: EmailStr) -> User:
-    """Busca un usuario por email validado."""
+    """Devuelve el usuario del email indicado o responde 404 si no existe."""
     return service.search_user(str(email))
 
 

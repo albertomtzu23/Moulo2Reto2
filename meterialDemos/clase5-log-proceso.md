@@ -3,7 +3,7 @@
 **Proyecto:** `m2-api-base`  
 **Fecha de inicio:** 2026-10-22  
 **Feature objetivo:** `GET /users/search?email=<email>`  
-**Estado:** endpoint implementado; los tests de `users` alcanzaron 100% de cobertura. La validación manual de mutaciones detectó las tres mutaciones no equivalentes; la suite completa reportó 99% y mantiene un fallo en una prueba preexistente de concurrencia de `reports`.
+**Estado:** feature y documentación completadas; tests enfocados de `users` con 100% de cobertura. La validación manual detectó las tres mutaciones no equivalentes probadas. La suite completa reportó 99%, con un fallo preexistente de concurrencia de `reports`.
 
 ## Alcance y criterios de aceptación
 
@@ -33,6 +33,7 @@ La implementación debe respetar las capas y convenciones de `CLAUDE.md`: la rut
 | 11 | Mutation testing manual y aislado en copias temporales del proyecto (sin instalar herramientas ni modificar el código fuente del workspace). | Se probaron 4 mutaciones: eliminación de validación de email, inversión de la rama de no encontrado y eliminación de normalización del email consultado fueron detectadas; quitar `.lower()` a los emails almacenados sobrevivió y se clasificó como equivalente bajo el modelo actual, porque los valores `EmailStr` ya se normalizan al crear los usuarios. Resultado manual: 3/4 mutantes detectados; 3/3 mutantes no equivalentes detectados. No es un score producido por una herramienta de mutation testing. |
 | 12 | Reejecución final de `pytest --cov=. --cov-report=term-missing`. | 18 tests pasaron y 1 falló en `tests/test_reports.py::test_ids_unicos_bajo_concurrencia`. Cobertura total: 99% (248 statements, 2 misses: `main.py:18` y `reports/service.py:21`). |
 | 13 | Depuración y refactor de `users/service.py`: se revisaron casos de búsqueda, errores 404, validación y orden de rutas; no se reprodujeron fallos en `users`. Se extrajo `_require_user` para compartir el manejo 404 de `get_user` y `search_user`. | `pytest tests\test_users.py --cov=users --cov-report=term-missing -q`: 13 pasaron y cobertura `users`: 100% (66 statements, 0 misses). Ruff pasó en rutas, servicio, repositorio y tests. |
+| 14 | Cierre de documentación: README actualizado con uso y respuestas HTTP; docstrings de la ruta y del servicio precisados; prompts ejecutados diferenciados de plantillas; reflexión completada. | Evidencia y resumen de cambios en este log. No se generaron capturas de pantalla; los resultados de comandos están transcritos arriba. |
 
 > La medición inicial se hizo sobre el estado encontrado del workspace. No debe presentarse como una ejecución limpia ni atribuirse el fallo a la búsqueda por email.
 
@@ -41,15 +42,15 @@ La implementación debe respetar las capas y convenciones de `CLAUDE.md`: la rut
 Se eligió **test-first** porque los criterios de aceptación del endpoint son verificables mediante peticiones HTTP y códigos de respuesta. La secuencia registrada fue:
 
 1. Escribir pruebas para email existente, formato inválido, email inexistente y comparación sin distinguir mayúsculas/minúsculas. Después se añadieron los edge cases de parámetro ausente y email vacío.
-2. Ejecutar las pruebas antes de implementar. Los tres casos que requerían encontrar un usuario fallaron con 422 al no existir la ruta; el caso de email inválido pasó.
+2. Ejecutar las pruebas antes de implementar. Los tres casos que requerían encontrar un usuario fallaron con 422 porque `/users/search` se interpretaba como `/{user_id}` y `search` no era un ID entero; el caso de email inválido pasó con 422.
 3. Implementar la ruta `GET /users/search` usando `EmailStr`, delegar al servicio y reutilizar `repository.find_by_email`.
 4. Volver a ejecutar las pruebas: los diez tests de usuarios pasaron. Ejecutar Ruff sobre `users/routes.py` y `users/service.py`: todos los checks pasaron.
 
 Esta evidencia corresponde a la secuencia realmente realizada. Las pruebas enfocadas cubren 100% del paquete `users`; la suite completa alcanzó 99% de cobertura, aunque una prueba ajena de concurrencia falló. En la validación manual de mutaciones, los tests detectaron las tres mutaciones no equivalentes probadas; una mutación equivalente sobrevivió.
 
-## Evidencia por completar
+## Evidencia recopilada y pendiente
 
-Añade evidencia real durante el reto. No marques una actividad como terminada hasta haberla ejecutado.
+Los pendientes siguen identificados para no atribuir resultados que no se ejecutaron.
 
 | Evidencia | Enlace, ruta o resultado |
 |---|---|
@@ -57,7 +58,8 @@ Añade evidencia real durante el reto. No marques una actividad como terminada h
 | Cobertura final | Suite completa antes del refactor: 99%; tras el refactor, `users`: 100% (66 statements, 0 misses). El global completo no se volvió a ejecutar tras el refactor |
 | Resultado de Ruff | `ruff check users\routes.py users\service.py users\repository.py tests\test_users.py`: todos los checks pasaron; `ruff check .` pendiente |
 | Mutation testing | Manual en copias temporales: 3/4 detectados; el superviviente se clasificó como equivalente. Herramienta automatizada no instalada; no se reporta score oficial. |
-| Capturas o logs de iteraciones | Pendiente; guardar rutas aquí |
+| Logs de iteraciones | Resultados y comandos transcritos en el registro de iteraciones de este documento |
+| Capturas de pantalla | No se capturaron durante el trabajo; si la plataforma las exige, deberán tomarse desde el editor/terminal y adjuntarse aparte |
 
 ## Prompt de contexto registrado
 
@@ -69,12 +71,10 @@ Prompt proporcionado para preparar el contexto de IA sobre la búsqueda por emai
 
 ## Reflexión
 
-Completar después de implementar y validar:
-
-- **Qué funcionó:** pendiente.
-- **Qué problema de depuración se encontró y cómo se verificó la causa:** pendiente.
-- **Qué refactor se hizo y qué pruebas protegieron el comportamiento:** pendiente.
-- **Qué mejoraríamos al usar IA en otro reto:** pendiente.
+- **Qué funcionó:** test-first dio una señal verificable antes de implementar: las tres pruebas de búsqueda fallaron porque la ruta aún no existía. Reutilizar `find_by_email` mantuvo la arquitectura y las 13 pruebas enfocadas alcanzaron 100% de cobertura en `users`.
+- **Qué se depuró:** al principio, `GET /users/search` sin una ruta específica producía 422 al coincidir con `/{user_id}`. Se confirmó mediante la respuesta de las pruebas antes de añadir la ruta estática en el orden requerido. Además, la mutación de comparación por email mostró que probar mayúsculas solo por HTTP no aislaba el comportamiento del repositorio; se añadió una prueba directa para `find_by_email`.
+- **Refactorización:** `_require_user` centraliza la conversión de `None` al error 404 estándar y se comparte entre la consulta por ID y la búsqueda por email. Las pruebas de usuario existente e inexistente protegieron ambos caminos; después del refactor, las 13 pruebas continuaron pasando.
+- **Qué mejoraríamos:** ejecutar la suite completa en un estado estable y resolver por separado la carrera de IDs en `reports`; automatizar mutation testing con una herramienta configurada en el proyecto; guardar capturas de terminal/editor en el momento de cada iteración, además del registro textual.
 
 ## Changelog de la entrega
 
@@ -109,3 +109,10 @@ Completar después de implementar y validar:
 - Se verificó que las pruebas del endpoint y sus errores pasan; no se reprodujo un defecto funcional en `users`.
 - Se centralizó en `_require_user` el manejo 404 compartido por búsqueda y consulta por ID.
 - Los 13 tests de `users` pasaron con 100% de cobertura; Ruff pasó en los archivos de usuarios y pruebas.
+
+### [0.6.0] — 2026-10-22 — documentación y cierre de evidencia
+
+- Se actualizó el README para describir la feature ya implementada e incluir un ejemplo de solicitud y respuestas HTTP.
+- Se aclararon los docstrings de la ruta y las funciones de búsqueda/lookup del servicio.
+- Se añadieron al documento de prompts ejemplos de prompts ejecutados, separados de las plantillas propuestas.
+- Se completó la reflexión y se aclaró que hay logs transcritos, pero no capturas de pantalla.
